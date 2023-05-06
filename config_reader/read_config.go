@@ -28,6 +28,16 @@ type Config struct {
 	Webcams      map[string]webcam.Webcam
 }
 
+func contains(keys []string, keyName string) bool {
+	for _, v := range keys {
+		if v == keyName {
+			return true
+		}
+	}
+
+	return false
+}
+
 func ReadConfig() (Config, error) {
 	var configFileLocation string
 	var config Config
