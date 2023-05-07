@@ -1,0 +1,24 @@
+[webcams]
+[webcams.cam01]
+name= "cam1"
+ip = "10.10.10.34"
+user = "user"
+password = "pass"
+
+[webcams.cam02]
+name= "cam2"
+ip = "10.10.10.34"
+user = "user"
+password = "pass"
+
+[rabbitmq]
+host = "localhost"
+port = 5672
+user = "guest"
+password = "pass"
+motion_queue = "queue_name"
+
+[alarmmanager]
+host = "localhost"
+port = 3000
+deviceid = "1"
