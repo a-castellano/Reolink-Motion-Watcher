@@ -45,7 +45,7 @@ func ReadConfig() (Config, error) {
 	var envVariable string = "MOTION_WATCHER_CONFIG_FILE_LOCATION"
 
 	requiredVariables := []string{"rabbitmq", "alarmmanager", "webcams"}
-	rabbitmqRequiredVariables := []string{"host", "port", "user", "password"}
+	rabbitmqRequiredVariables := []string{"host", "port", "user", "password", "motion_queue"}
 	webcamRequiredVariables := []string{"ip", "user", "password", "name"}
 	alarmManagerRequiredVariables := []string{"host", "port", "deviceid"}
 
