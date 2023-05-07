@@ -1,0 +1,11 @@
+[rabbitmq]
+host = "localhost"
+port = 5672
+user = "guest"
+password = "pass"
+motion_queue = "queue_name"
+
+[alarmmanager]
+host = "localhost"
+port = 3000
+deviceid = "1"
