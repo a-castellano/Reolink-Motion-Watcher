@@ -17,4 +17,10 @@ port = 5672
 user = "guest"
 password = "pass"
 motion_queue = "queue_name"
+video_queue = "video_queue_name"
 
+[redis]
+host = "10.10.10.10"
+port = 6379
+password = "secret123"
+database = 1

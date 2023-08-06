@@ -17,6 +17,7 @@ port = 5672
 user = "guest"
 password = "pass"
 motion_queue = "queue_name"
+video_queue = "video_queue_name"
 
 [alarmmanager]
 host = "localhost"

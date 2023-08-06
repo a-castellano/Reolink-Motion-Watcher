@@ -126,6 +126,18 @@ func TestProcessConfigNoRedis(t *testing.T) {
 	}
 }
 
+func TestProcessConfigRepeatedQueueName(t *testing.T) {
+	os.Setenv("MOTION_WATCHER_CONFIG_FILE_LOCATION", "./config_files_test/config_same_queue_name/")
+	_, err := ReadConfig()
+	if err == nil {
+		t.Errorf("ReadConfig with repeated queue name should fail.")
+	} else {
+		if err.Error() != "Fatal error config: rabbitmq motion_queue and video_queue cannot be the same." {
+			t.Errorf("Error should be \"Fatal error config: rabbitmq motion_queue and video_queue cannot be the same.\" but error was '%s'.", err.Error())
+		}
+	}
+}
+
 func TestProcessConfigOK(t *testing.T) {
 	os.Setenv("MOTION_WATCHER_CONFIG_FILE_LOCATION", "./config_files_test/config_ok/")
 	_, err := ReadConfig()
