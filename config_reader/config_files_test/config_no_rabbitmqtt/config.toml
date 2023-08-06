@@ -15,3 +15,9 @@ password = "pass"
 host = "localhost"
 port = 3000
 deviceid = "1"
+
+[redis]
+host = "10.10.10.10"
+port = 6379
+password = "secret123"
+database = 1
