@@ -10,13 +10,13 @@ type MotionDetector interface {
 	MotionDetected() (bool, error)
 }
 
-type WebCamMotionDetector struct {
-	client http.Client
-	webcam webcam.Webcam
+type WebcamMotionDetector struct {
+	Client http.Client
+	Webcam webcam.Webcam
 }
 
-func (w WebCamMotionDetector) MotionDetected() (bool, error) {
-	motion, connectErr := w.webcam.MotionDetected(w.client)
+func (w WebcamMotionDetector) MotionDetected() (bool, error) {
+	motion, connectErr := w.Webcam.MotionDetected(w.Client)
 	return motion, connectErr
 }
 

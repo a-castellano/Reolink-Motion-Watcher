@@ -29,13 +29,14 @@ type RedisInstance struct {
 	Port     int
 	Password string
 	Database int
+	TTL      int32
 }
 
 type Config struct {
-	Rabbitmq     Rabbitmq
-	AlarmManager AlarmManager
-	Webcams      map[string]webcam.Webcam
-	RedisInstance
+	Rabbitmq      Rabbitmq
+	AlarmManager  AlarmManager
+	Webcams       map[string]webcam.Webcam
+	RedisInstance RedisInstance
 }
 
 func contains(keys []string, keyName string) bool {
@@ -56,7 +57,7 @@ func ReadConfig() (Config, error) {
 
 	requiredVariables := []string{"rabbitmq", "alarmmanager", "webcams", "redis"}
 	rabbitmqRequiredVariables := []string{"host", "port", "user", "password", "motion_queue", "video_queue"}
-	redisRequiredVariables := []string{"host", "port", "password", "database"}
+	redisRequiredVariables := []string{"host", "port", "password", "database", "ttl"}
 	webcamRequiredVariables := []string{"ip", "user", "password", "name"}
 	alarmManagerRequiredVariables := []string{"host", "port", "deviceid"}
 
@@ -178,8 +179,11 @@ func ReadConfig() (Config, error) {
 
 	alarmManagerConfig := AlarmManager{Host: viper.GetString("alarmmanager.host"), Port: viper.GetInt("alarmmanager.port"), DeviceId: viper.GetString("alarmmanager.deviceid")}
 
+	redisConfig := RedisInstance{Host: viper.GetString("redis.host"), Port: viper.GetInt("redis.port"), Password: viper.GetString("redis.password"), Database: viper.GetInt("redis.database"), TTL: viper.GetInt32("redis.ttl")}
+
 	config.Rabbitmq = rabbitmqConfig
 	config.AlarmManager = alarmManagerConfig
+	config.RedisInstance = redisConfig
 	config.Webcams = webcams
 
 	return config, nil
