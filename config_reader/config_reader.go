@@ -29,7 +29,7 @@ type RedisInstance struct {
 	Port     int
 	Password string
 	Database int
-	TTL      int32
+	TTL      uint8
 }
 
 type Config struct {
@@ -179,7 +179,7 @@ func ReadConfig() (Config, error) {
 
 	alarmManagerConfig := AlarmManager{Host: viper.GetString("alarmmanager.host"), Port: viper.GetInt("alarmmanager.port"), DeviceId: viper.GetString("alarmmanager.deviceid")}
 
-	redisConfig := RedisInstance{Host: viper.GetString("redis.host"), Port: viper.GetInt("redis.port"), Password: viper.GetString("redis.password"), Database: viper.GetInt("redis.database"), TTL: viper.GetInt32("redis.ttl")}
+	redisConfig := RedisInstance{Host: viper.GetString("redis.host"), Port: viper.GetInt("redis.port"), Password: viper.GetString("redis.password"), Database: viper.GetInt("redis.database"), TTL: uint8(viper.GetUint("redis.ttl"))}
 
 	config.Rabbitmq = rabbitmqConfig
 	config.AlarmManager = alarmManagerConfig

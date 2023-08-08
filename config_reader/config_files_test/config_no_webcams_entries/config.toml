@@ -18,3 +18,4 @@ host = "10.10.10.10"
 port = 6379
 password = "secret123"
 database = 1
+ttl = 15
