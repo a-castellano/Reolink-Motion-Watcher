@@ -9,7 +9,7 @@ import (
 
 type Storage struct {
 	RedisClient *goredis.Client
-	TTL         int32
+	TTL         uint8
 }
 
 func (storage Storage) UpdateTrigger(ctx context.Context, webcamName string) (bool, error) {
