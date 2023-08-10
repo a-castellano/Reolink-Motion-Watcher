@@ -3,7 +3,7 @@ module github.com/a-castellano/Reolink-Motion-Watcher
 go 1.20
 
 require (
-	github.com/a-castellano/reolink-manager v0.0.0-20221106211211-8f208e8098ec
+	github.com/a-castellano/reolink-manager v0.0.0-20230809162629-50e17b7f598c
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/spf13/viper v1.16.0
 )

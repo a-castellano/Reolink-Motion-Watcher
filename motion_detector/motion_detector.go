@@ -12,7 +12,7 @@ type MotionDetector interface {
 
 type WebcamMotionDetector struct {
 	Client http.Client
-	Webcam webcam.Webcam
+	Webcam *webcam.Webcam
 }
 
 func (w WebcamMotionDetector) MotionDetected() (bool, error) {

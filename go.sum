@@ -40,6 +40,12 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/a-castellano/reolink-manager v0.0.0-20221106211211-8f208e8098ec h1:cnah3b+lnbDOFytapJP4lTSCXOi2smwUTDQ7P599C5Y=
 github.com/a-castellano/reolink-manager v0.0.0-20221106211211-8f208e8098ec/go.mod h1:zV6O88jXJrCA87HC1fPyW8Ea0pfJbg4LLncRkGrUMWk=
+github.com/a-castellano/reolink-manager v0.0.0-20230808213301-1fe954ea12ab h1:57cPLRcSBowrmeEHwu+yHjAkjoZX14KwE6e3YxKwtCY=
+github.com/a-castellano/reolink-manager v0.0.0-20230808213301-1fe954ea12ab/go.mod h1:jWXg03pDkh4+WAYljLIfwdOR5+/bVb2r/kynF8GLg3c=
+github.com/a-castellano/reolink-manager v0.0.0-20230808215019-7c062fed3911 h1:SH9OXzdFHi24XuM/M414CtIxZgc8IC0cAgowTV7cUwE=
+github.com/a-castellano/reolink-manager v0.0.0-20230808215019-7c062fed3911/go.mod h1:jWXg03pDkh4+WAYljLIfwdOR5+/bVb2r/kynF8GLg3c=
+github.com/a-castellano/reolink-manager v0.0.0-20230809162629-50e17b7f598c h1:aeGYtYCJSt/gU6xvuFPnfBD62rpbTsd6+OUmlSw6eCE=
+github.com/a-castellano/reolink-manager v0.0.0-20230809162629-50e17b7f598c/go.mod h1:jWXg03pDkh4+WAYljLIfwdOR5+/bVb2r/kynF8GLg3c=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash/v2 v2.1.2 h1:YRXhKfTDauu4ajMg1TPgFO5jnlC2HCbmLXMcTG5cbYE=
 github.com/cespare/xxhash/v2 v2.1.2/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
