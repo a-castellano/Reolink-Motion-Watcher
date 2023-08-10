@@ -10,10 +10,12 @@ import (
 )
 
 type Rabbitmq struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
+	Host            string
+	Port            int
+	User            string
+	Password        string
+	MotionQueueName string
+	VideoQueueName  string
 }
 
 type AlarmManager struct {
@@ -22,10 +24,19 @@ type AlarmManager struct {
 	DeviceId string
 }
 
+type RedisInstance struct {
+	Host     string
+	Port     int
+	Password string
+	Database int
+	TTL      uint8
+}
+
 type Config struct {
-	Rabbitmq     Rabbitmq
-	AlarmManager AlarmManager
-	Webcams      map[string]webcam.Webcam
+	Rabbitmq      Rabbitmq
+	AlarmManager  AlarmManager
+	Webcams       map[string]webcam.Webcam
+	RedisInstance RedisInstance
 }
 
 func contains(keys []string, keyName string) bool {
@@ -44,8 +55,9 @@ func ReadConfig() (Config, error) {
 
 	var envVariable string = "MOTION_WATCHER_CONFIG_FILE_LOCATION"
 
-	requiredVariables := []string{"rabbitmq", "alarmmanager", "webcams"}
-	rabbitmqRequiredVariables := []string{"host", "port", "user", "password"}
+	requiredVariables := []string{"rabbitmq", "alarmmanager", "webcams", "redis"}
+	rabbitmqRequiredVariables := []string{"host", "port", "user", "password", "motion_queue", "video_queue"}
+	redisRequiredVariables := []string{"host", "port", "password", "database", "ttl"}
 	webcamRequiredVariables := []string{"ip", "user", "password", "name"}
 	alarmManagerRequiredVariables := []string{"host", "port", "deviceid"}
 
@@ -73,10 +85,20 @@ func ReadConfig() (Config, error) {
 		}
 	}
 
+	for _, redisVariable := range redisRequiredVariables {
+		if !viper.IsSet("redis." + redisVariable) {
+			return config, errors.New("Fatal error config: no " + redisVariable + " field was found.")
+		}
+	}
+
 	for _, rabbitmqVariable := range rabbitmqRequiredVariables {
 		if !viper.IsSet("rabbitmq." + rabbitmqVariable) {
 			return config, errors.New("Fatal error config: no rabbitmq " + rabbitmqVariable + " was found.")
 		}
+	}
+
+	if viper.GetString("rabbitmq.motion_queue") == viper.GetString("rabbitmq.video_queue") {
+		return config, errors.New("Fatal error config: rabbitmq motion_queue and video_queue cannot be the same.")
 	}
 
 	for _, alarmManagerVariable := range alarmManagerRequiredVariables {
@@ -153,12 +175,15 @@ func ReadConfig() (Config, error) {
 		return config, errors.New("Fatal error config: no webcams were found.")
 	}
 
-	rabbitmqConfig := Rabbitmq{Host: viper.GetString("rabbitmq.host"), Port: viper.GetInt("rabbitmq.port"), User: viper.GetString("rabbitmq.user"), Password: viper.GetString("rabbitmq.password")}
+	rabbitmqConfig := Rabbitmq{Host: viper.GetString("rabbitmq.host"), Port: viper.GetInt("rabbitmq.port"), User: viper.GetString("rabbitmq.user"), Password: viper.GetString("rabbitmq.password"), MotionQueueName: viper.GetString("rabbitmq.motion_queue"), VideoQueueName: viper.GetString("rabbitmq.video_queue")}
 
 	alarmManagerConfig := AlarmManager{Host: viper.GetString("alarmmanager.host"), Port: viper.GetInt("alarmmanager.port"), DeviceId: viper.GetString("alarmmanager.deviceid")}
 
+	redisConfig := RedisInstance{Host: viper.GetString("redis.host"), Port: viper.GetInt("redis.port"), Password: viper.GetString("redis.password"), Database: viper.GetInt("redis.database"), TTL: uint8(viper.GetUint("redis.ttl"))}
+
 	config.Rabbitmq = rabbitmqConfig
 	config.AlarmManager = alarmManagerConfig
+	config.RedisInstance = redisConfig
 	config.Webcams = webcams
 
 	return config, nil

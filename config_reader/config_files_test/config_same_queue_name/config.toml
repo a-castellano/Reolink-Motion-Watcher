@@ -7,7 +7,7 @@ password = "pass"
 
 [webcams.cam02]
 name= "cam2"
-ip = "10.10.10.34"
+ip = "10.10.10.35"
 user = "user"
 password = "pass"
 
@@ -16,8 +16,8 @@ host = "localhost"
 port = 5672
 user = "guest"
 password = "pass"
-motion_queue = "queue_name"
-video_queue = "video_queue_name"
+motion_queue = "motion_queue_name"
+video_queue = "motion_queue_name"
 
 [alarmmanager]
 host = "localhost"
