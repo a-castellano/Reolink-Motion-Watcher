@@ -3,8 +3,8 @@ package queues
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"strconv"
-	"time"
 
 	config "github.com/a-castellano/Reolink-Motion-Watcher/config_reader"
 	"github.com/streadway/amqp"
@@ -39,12 +39,9 @@ func DecodeNotification(encoded []byte) (Notification, error) {
 }
 
 func SendNotification(rabbitmqConfig config.Rabbitmq, webcamInfoName string) error {
-	now := time.Now() // current local time
-	currentTimestamp := now.Unix()
 
-	newNotification := Notification{Timestamp: currentTimestamp, WebCamName: webcamInfoName}
-
-	encodedNotification, _ := EncodeNotification(newNotification)
+	notificationString := fmt.Sprintf("Motion detected by webcam %s\n", webcamInfoName)
+	encodedNotification := []byte(notificationString)
 
 	connection_string := "amqp://" + rabbitmqConfig.User + ":" + rabbitmqConfig.Password + "@" + rabbitmqConfig.Host + ":" + strconv.Itoa(rabbitmqConfig.Port) + "/"
 
