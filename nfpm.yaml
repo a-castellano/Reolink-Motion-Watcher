@@ -1,0 +1,30 @@
+# nfpm example config file
+#
+# check https://nfpm.goreleaser.com/configuration for detailed usage
+#
+name: "windmaker-reolink-motion-watcher"
+arch: "amd64"
+platform: "linux"
+version: "v0.0.7"
+section: "default"
+priority: "extra"
+provides:
+- windmaker-reolink-motion-watcher
+maintainer: "Álvaro Castellano Vela <alvaro.castellano.vela@gmail.com>"
+description: |
+  Service triggering messages and sending videos when reolink webcam motion sensor is triggered.
+vendor: "Windmaker"
+homepage: "https://git.windmaker.net/a-castellano/reolink-motion-watcher"
+license: "BSD 2"
+changelog: "changelog.yaml"
+contents:
+- src: ./reolink-motion-watcher
+  dst: /usr/local/bin/windmaker-reolink-motion-watcher
+- src: ./packaging/deb/default/windmaker-reolink-motion-watcher
+  dst: /etc/default/windmaker-reolink-motion-watcher
+- src: ./packaging/deb/systemd/windmaker-reolink-motion-watcher.service
+  dst: /usr/lib/systemd/system/windmaker-reolink-motion-watcher.service
+overrides:
+  deb:
+    scripts:
+      postinstall: ./packaging/deb/scripts/postinstall.sh

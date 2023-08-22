@@ -35,7 +35,7 @@ type RedisInstance struct {
 type Config struct {
 	Rabbitmq      Rabbitmq
 	AlarmManager  AlarmManager
-	Webcams       map[string]webcam.Webcam
+	Webcams       map[string]*webcam.Webcam
 	RedisInstance RedisInstance
 }
 
@@ -107,7 +107,7 @@ func ReadConfig() (Config, error) {
 		}
 	}
 
-	webcams := make(map[string]webcam.Webcam)
+	webcams := make(map[string]*webcam.Webcam)
 	readedWebCamIDs := make(map[string]bool)
 	readedWebCamNames := make(map[string]bool)
 	readedWebCamIPs := make(map[string]bool)
@@ -166,7 +166,7 @@ func ReadConfig() (Config, error) {
 					}
 				}
 
-				webcams[webCamName] = newWebcam
+				webcams[webCamName] = &newWebcam
 			}
 		}
 	}

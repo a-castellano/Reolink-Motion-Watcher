@@ -19,3 +19,16 @@ func (storage Storage) UpdateTrigger(ctx context.Context, webcamName string) (bo
 	}
 	return true, nil
 }
+
+func (storage Storage) CheckTrigger(ctx context.Context, webcamName string) (bool, error) {
+	_, err := storage.RedisClient.Get(ctx, webcamName).Result()
+	if err == goredis.Nil { // Motion has not been triggered
+		return false, nil
+	} else {
+		if err != nil {
+			return false, err
+		} else { // Key exists
+			return true, nil
+		}
+	}
+}
