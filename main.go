@@ -17,7 +17,10 @@ import (
 	goredis "github.com/redis/go-redis/v9"
 )
 
-func WatchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, storageInstance storage.Storage, watcher apiwatcher.APIWatcher, alarmManagerRequester apiwatcher.Requester, alarmDeviceId string) {
+// WatchMotionSensor
+// For each webcam, checks if motion is triggered and update storage when alarm is bot disarmed
+
+func WatchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, storageInstance storage.Storage, watcher apiwatcher.APIWatcher, alarmManagerRequester apiwatcher.Requester, alarmDeviceID string) {
 
 	motionDetectors := make(map[string]*motion_detector.WebcamMotionDetector)
 
@@ -51,7 +54,7 @@ func WatchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, s
 						apiErrorString := fmt.Sprintf("%v", apiInfoErr.Error())
 						log.Fatal(apiErrorString)
 					}
-					if apiInfo.DevicesInfo[alarmDeviceId].Mode == "disarmed" { // Debug
+					if apiInfo.DevicesInfo[alarmDeviceID].Mode == "disarmed" { // Debug
 						log.Println("Alarm status is activated, update storage.")
 						storageInstance.UpdateTrigger(ctx, webcamName)
 					}
@@ -63,10 +66,13 @@ func WatchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, s
 
 }
 
+// SendNotificationsOnMotion
+// Sends rabbitmq message is any motion has been triggered
+
 func SendNotificationsOnMotion(ctx context.Context, storageInstance storage.Storage, webcams map[string]*webcam.Webcam, notificationOnMotionChannel chan bool, rabbitmqConfig config.Rabbitmq) error {
 	currentValues := make(map[string]bool)
 	for {
-		for webcamName, _ := range webcams {
+		for webcamName := range webcams {
 			notify := false
 			if triggered, ok := currentValues[webcamName]; ok {
 				currentValue, _ := storageInstance.CheckTrigger(ctx, webcamName)
