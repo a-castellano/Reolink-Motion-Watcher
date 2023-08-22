@@ -17,10 +17,10 @@ import (
 	goredis "github.com/redis/go-redis/v9"
 )
 
-// WatchMotionSensor
+// watchMotionSensor
 // For each webcam, checks if motion is triggered and update storage when alarm is bot disarmed
 
-func WatchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, storageInstance storage.Storage, watcher apiwatcher.APIWatcher, alarmManagerRequester apiwatcher.Requester, alarmDeviceID string) {
+func watchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, storageInstance storage.Storage, watcher apiwatcher.APIWatcher, alarmManagerRequester apiwatcher.Requester, alarmDeviceID string) {
 
 	motionDetectors := make(map[string]*motion_detector.WebcamMotionDetector)
 
@@ -66,10 +66,10 @@ func WatchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, s
 
 }
 
-// SendNotificationsOnMotion
+// sendNotificationsOnMotion
 // Sends rabbitmq message is any motion has been triggered
 
-func SendNotificationsOnMotion(ctx context.Context, storageInstance storage.Storage, webcams map[string]*webcam.Webcam, notificationOnMotionChannel chan bool, rabbitmqConfig config.Rabbitmq) error {
+func sendNotificationsOnMotion(ctx context.Context, storageInstance storage.Storage, webcams map[string]*webcam.Webcam, notificationOnMotionChannel chan bool, rabbitmqConfig config.Rabbitmq) error {
 	currentValues := make(map[string]bool)
 	for {
 		for webcamName := range webcams {
@@ -145,10 +145,10 @@ func main() {
 		panic(apiInfoErr)
 	}
 
-	go WatchMotionSensor(ctx, serviceConfig.Webcams, storageInstance, watcher, alarmManagerRequester, serviceConfig.AlarmManager.DeviceId)
+	go watchMotionSensor(ctx, serviceConfig.Webcams, storageInstance, watcher, alarmManagerRequester, serviceConfig.AlarmManager.DeviceId)
 
 	notificationOnMotionChannel := make(chan bool)
-	SendNotificationsOnMotion(ctx, storageInstance, serviceConfig.Webcams, notificationOnMotionChannel, serviceConfig.Rabbitmq)
+	sendNotificationsOnMotion(ctx, storageInstance, serviceConfig.Webcams, notificationOnMotionChannel, serviceConfig.Rabbitmq)
 
 	<-notificationOnMotionChannel
 
