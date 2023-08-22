@@ -18,7 +18,7 @@ homepage: "https://git.windmaker.net/a-castellano/reolink-motion-watcher"
 license: "BSD 2"
 changelog: "changelog.yaml"
 contents:
-- src: ./reolink-motion-watcher
+- src: ./Reolink-Motion-Watcher
   dst: /usr/local/bin/windmaker-reolink-motion-watcher
 - src: ./packaging/deb/default/windmaker-reolink-motion-watcher
   dst: /etc/default/windmaker-reolink-motion-watcher
