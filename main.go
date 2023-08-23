@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"log/syslog"
 	"net/http"
+	"sort"
 	"time"
 
 	apiwatcher "github.com/a-castellano/AlarmStatusWatcher/apiwatcher"
@@ -93,6 +95,61 @@ func sendNotificationsOnMotion(ctx context.Context, storageInstance storage.Stor
 	return nil
 }
 
+func findVideosToSend(ctx context.Context, storageInstance storage.Storage, recordingPrefix string, webcamName string, referenceTime time.Time) ([]string, error) {
+
+	var videosToSend []string
+
+	folderPath := fmt.Sprintf("%s%s/raw_reduced", recordingPrefix, webcamName)
+	files, _ := ioutil.ReadDir(folderPath)
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].ModTime().After(files[j].ModTime())
+	})
+	for _, videoToCheck := range files {
+		if videoToCheck.ModTime().After(referenceTime) {
+			// Checkif video has been marked to be send
+			triggeredVideo, _ := storageInstance.CheckTrigger(ctx, folderPath)
+			if !triggeredVideo {
+				videosToSendPath := fmt.Sprintf("%s/%s", folderPath, videoToCheck.Name())
+				storageInstance.UpdateTrigger(ctx, videosToSendPath)
+				videosToSend = append(videosToSend, videosToSendPath)
+			}
+		}
+	}
+
+	return videosToSend, nil
+}
+
+// sendNotificationsOnMotion
+// Sends rabbitmq message with notification containing
+
+func sendVideoOnMotion(ctx context.Context, storageInstance storage.Storage, webcams map[string]*webcam.Webcam, rabbitmqConfig config.Rabbitmq, recordingPrefix string) error {
+	currentValues := make(map[string]bool)
+	for {
+		for webcamName := range webcams {
+			sendVideos := false
+			if triggered, ok := currentValues[webcamName]; ok {
+				currentValue, _ := storageInstance.CheckTrigger(ctx, webcamName)
+				currentValues[webcamName] = currentValue
+				if currentValue == true && triggered != currentValue {
+					sendVideos = true
+				} // was not been triggered since now'
+			} else { //Check current key
+				currentValues[webcamName] = false
+			}
+			if sendVideos {
+				referenceTime := time.Now().Add(-time.Second * time.Duration(storageInstance.TTL))
+				videosToSend, _ := findVideosToSend(ctx, storageInstance, recordingPrefix, webcamName, referenceTime)
+				for _, videoPath := range videosToSend {
+					queues.SendNotification(rabbitmqConfig, videoPath)
+				}
+			}
+
+		}
+		time.Sleep(1 * time.Second)
+	}
+	return nil
+}
+
 func main() {
 
 	logwriter, e := syslog.New(syslog.LOG_NOTICE, "windmaker-reolink-motion-watcher")
@@ -146,6 +203,7 @@ func main() {
 	}
 
 	go watchMotionSensor(ctx, serviceConfig.Webcams, storageInstance, watcher, alarmManagerRequester, serviceConfig.AlarmManager.DeviceId)
+	go sendVideoOnMotion(ctx, storageInstance, serviceConfig.Webcams, serviceConfig.Rabbitmq, serviceConfig.RecodingsPrefix)
 
 	notificationOnMotionChannel := make(chan bool)
 	sendNotificationsOnMotion(ctx, storageInstance, serviceConfig.Webcams, notificationOnMotionChannel, serviceConfig.Rabbitmq)
