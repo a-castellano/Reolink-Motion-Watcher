@@ -56,14 +56,14 @@ func watchMotionSensor(ctx context.Context, webcams map[string]*webcam.Webcam, s
 						apiErrorString := fmt.Sprintf("%v", apiInfoErr.Error())
 						log.Fatal(apiErrorString)
 					}
-					if apiInfo.DevicesInfo[alarmDeviceID].Mode == "disarmed" { // Debug
+					if apiInfo.DevicesInfo[alarmDeviceID].Mode != "disarmed" { // Debug
 						log.Println("Alarm status is activated, update storage.")
 						storageInstance.UpdateTrigger(ctx, webcamName)
 					}
 				}
 			}
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 
 }
@@ -139,8 +139,8 @@ func sendVideoOnMotion(ctx context.Context, storageInstance storage.Storage, web
 			if sendVideos {
 				referenceTime := time.Now().Add(-time.Second * time.Duration(storageInstance.TTL))
 				videosToSend, _ := findVideosToSend(ctx, storageInstance, recordingPrefix, webcamName, referenceTime)
-				for _, videoPath := range videosToSend {
-					queues.SendNotification(rabbitmqConfig, videoPath)
+				for i := len(videosToSend) - 1; i >= 0; i-- {
+					queues.SendVideoPath(rabbitmqConfig, videosToSend[i])
 				}
 			}
 
