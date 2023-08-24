@@ -30,3 +30,6 @@ port = 6379
 password = "secret123"
 database = 1
 ttl = 15
+
+[recordings]
+location = "/home/user/recordings"

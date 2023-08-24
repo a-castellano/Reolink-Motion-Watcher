@@ -23,3 +23,6 @@ video_queue = "video_queue_name"
 host = "localhost"
 port = 3000
 deviceid = "1"
+
+[recordings]
+location = "/home/user/recordings"
