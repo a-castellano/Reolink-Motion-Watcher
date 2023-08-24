@@ -33,10 +33,11 @@ type RedisInstance struct {
 }
 
 type Config struct {
-	Rabbitmq      Rabbitmq
-	AlarmManager  AlarmManager
-	Webcams       map[string]*webcam.Webcam
-	RedisInstance RedisInstance
+	Rabbitmq        Rabbitmq
+	AlarmManager    AlarmManager
+	Webcams         map[string]*webcam.Webcam
+	RedisInstance   RedisInstance
+	RecodingsPrefix string
 }
 
 func contains(keys []string, keyName string) bool {
@@ -55,11 +56,12 @@ func ReadConfig() (Config, error) {
 
 	var envVariable string = "MOTION_WATCHER_CONFIG_FILE_LOCATION"
 
-	requiredVariables := []string{"rabbitmq", "alarmmanager", "webcams", "redis"}
+	requiredVariables := []string{"rabbitmq", "alarmmanager", "webcams", "redis", "recordings"}
 	rabbitmqRequiredVariables := []string{"host", "port", "user", "password", "motion_queue", "video_queue"}
 	redisRequiredVariables := []string{"host", "port", "password", "database", "ttl"}
 	webcamRequiredVariables := []string{"ip", "user", "password", "name"}
 	alarmManagerRequiredVariables := []string{"host", "port", "deviceid"}
+	recordingsRequiredVariables := []string{"location"}
 
 	viper := viperLib.New()
 
@@ -88,6 +90,12 @@ func ReadConfig() (Config, error) {
 	for _, redisVariable := range redisRequiredVariables {
 		if !viper.IsSet("redis." + redisVariable) {
 			return config, errors.New("Fatal error config: no " + redisVariable + " field was found.")
+		}
+	}
+
+	for _, recordingVariable := range recordingsRequiredVariables {
+		if !viper.IsSet("recordings." + recordingVariable) {
+			return config, errors.New("Fatal error config: no " + recordingVariable + " field was found.")
 		}
 	}
 
@@ -185,6 +193,7 @@ func ReadConfig() (Config, error) {
 	config.AlarmManager = alarmManagerConfig
 	config.RedisInstance = redisConfig
 	config.Webcams = webcams
+	config.RecodingsPrefix = viper.GetString("recordings.location")
 
 	return config, nil
 }

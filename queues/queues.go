@@ -89,3 +89,54 @@ func SendNotification(rabbitmqConfig config.Rabbitmq, webcamInfoName string) err
 	}
 	return nil
 }
+
+func SendVideoPath(rabbitmqConfig config.Rabbitmq, videoPath string) error {
+
+	encodedNotification := []byte(videoPath)
+
+	connection_string := "amqp://" + rabbitmqConfig.User + ":" + rabbitmqConfig.Password + "@" + rabbitmqConfig.Host + ":" + strconv.Itoa(rabbitmqConfig.Port) + "/"
+
+	conn, errDial := amqp.Dial(connection_string)
+	defer conn.Close()
+
+	if errDial != nil {
+		return errDial
+	}
+
+	channel, errChannel := conn.Channel()
+	defer channel.Close()
+	if errChannel != nil {
+		return errChannel
+	}
+
+	queue, errQueue := channel.QueueDeclare(
+		rabbitmqConfig.VideoQueueName, // name
+		true,                          // durable
+		false,                         // delete when unused
+		false,                         // exclusive
+		false,                         // no-wait
+		nil,                           // arguments
+	)
+
+	if errQueue != nil {
+		return errQueue
+	}
+
+	// send Notification
+
+	err := channel.Publish(
+		"",         // exchange
+		queue.Name, // routing key
+		false,      // mandatory
+		false,
+		amqp.Publishing{
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "text/plain",
+			Body:         encodedNotification,
+		})
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
